@@ -4,13 +4,13 @@ from rocketpy import RailButtons, NoseCone, TrapezoidalFins, Tail, Parachute
 
 ''' Defining rocket primary parameters '''
 rocket = Rocket(
-    radius=127 / 2000,
-    mass=14.426,        # rocket's mass without the motor in kg
-    inertia=(6.321, 6.321, 0.034),      # in relation to the rocket's center of mass without motor
-    power_off_drag="Curves/DragCurve.csv",
-    power_on_drag="Curves/DragCurve.csv",
-    center_of_mass_without_motor=0,
-    coordinate_system_orientation="tail_to_nose",
+    radius = 127 / 2000,
+    mass = 14.426,        # rocket's mass without the motor in kg
+    inertia = (6.321, 6.321, 0.034),      # in relation to the rocket's center of mass without motor
+    power_off_drag = "Curves/DragCurve.csv",
+    power_on_drag = "Curves/DragCurve.csv",
+    center_of_mass_without_motor = 0,
+    coordinate_system_orientation = "tail_to_nose",
 )
 
 ''' Defining the motor '''
@@ -76,27 +76,27 @@ fin_set = rocket.add_trapezoidal_fins(
 
 ''' Tail '''
 tail = rocket.add_tail(
-    top_radius=0.0635, bottom_radius=0.0435, length=0.060, position=-1.194656
+    top_radius = 0.0635, bottom_radius = 0.0435, length = 0.060, position = -1.194656
 )
 
 ''' Adding parachute '''
 
 main = rocket.add_parachute(
-    name="main",
-    cd_s=10.0,
-    trigger=800,        # ejection altitude in meters
-    sampling_rate=105,
-    lag=1.5,
-    noise=(0, 8.3, 0.5),
+    name = "main",
+    cd_s = 10.0,
+    trigger = 800,        # ejection altitude in meters
+    sampling_rate = 105,
+    lag = 1.5,
+    noise = (0, 8.3, 0.5),
 )
 
 drogue = rocket.add_parachute(
-    name="drogue",
-    cd_s=1.0,
-    trigger="apogee",  # ejection at apogee
-    sampling_rate=105,
-    lag=1.5,
-    noise=(0, 8.3, 0.5),
+    name = "drogue",
+    cd_s = 1.0,
+    trigger = "apogee",  # ejection at apogee
+    sampling_rate = 105,
+    lag = 1.5,
+    noise = (0, 8.3, 0.5),
 )
 
 # rocket.plots.static_margin()

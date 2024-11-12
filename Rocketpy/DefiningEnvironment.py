@@ -3,12 +3,12 @@ from rocketpy import Environment
 ''' Defining the Environment '''
 
 ''' Location '''
-env = Environment(latitude=32.990254, longitude=-106.974998, elevation=1400)
+env = Environment(latitude = 32.990254, longitude = -106.974998, elevation = 1400)
 
 ''' Time '''
 import datetime
 
-tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+tomorrow = datetime.date.today() + datetime.timedelta(days = 1)
 
 env.set_date(
     (tomorrow.year, tomorrow.month, tomorrow.day, 12)
@@ -16,8 +16,8 @@ env.set_date(
 
 ''' Atmospheric Model '''
 env.set_atmospheric_model(
-    type="Forecast", # "custom_atmosphere", wind_v, wind_u
-    file="GFS"
+    type = "Forecast", # "custom_atmosphere", wind_v, wind_u
+    file = "GFS"
 )
 
 # env.info()
