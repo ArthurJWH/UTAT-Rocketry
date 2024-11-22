@@ -2,7 +2,7 @@ from rocketpy.simulation import MonteCarlo
 from rocketpy.stochastic import StochasticSolidMotor, StochasticEnvironment, StochasticGenericMotor, StochasticRocket, StochasticFlight, StochasticNoseCone, StochasticTail, StochasticTrapezoidalFins, StochasticParachute, StochasticRailButtons
 
 import DefiningEnvironment
-from Motors import BuildingLiquidMotor
+from Motors import BuildingLiquidMotor, BuildingGenericMotor
 import BuildingRocket
 import Simulation
 
@@ -25,8 +25,14 @@ stochastic_env = StochasticEnvironment(
 #     nozzle_radius = 0.5 / 1000,
 #     nozzle_position = 0.001
 # )
-stochastic_motor = BuildingLiquidMotor.liquid_motor
-
+# stochastic_motor = BuildingLiquidMotor.liquid_motor
+stochastic_motor = StochasticGenericMotor(
+    generic_motor = BuildingGenericMotor.generic_motor,
+    burn_start_time = (0, 0.1,"binomial"),
+    total_impulse = (6500, 100),
+    nozzle_radius = 0.5 / 1000,
+    nozzle_position = 0.001
+)
 # stochastic_motor.visualize_attributes()
 
 stochastic_rocket = StochasticRocket(
@@ -77,7 +83,10 @@ stochastic_drogue = StochasticParachute(
     lag = 0.2
 )
 
-stochastic_rocket.add_motor(stochastic_motor, position = 0.001)
+stochastic_rocket.add_motor(
+    stochastic_motor,
+    position = 0.001
+)
 
 stochastic_rocket.add_nose(
     stochastic_nose_cone,
@@ -122,3 +131,5 @@ test_dispersion = MonteCarlo(
     rocket = stochastic_rocket,
     flight = stochastic_flight
 )
+
+# test_dispersion.import_outputs("results.txt")

@@ -1,6 +1,11 @@
+import numpy as np
+import pandas as pd
 from rocketpy import Rocket
 from rocketpy import RailButtons, NoseCone, TrapezoidalFins, Tail, Parachute
 # Engine.info()
+
+# curve_drag = pd.read_csv("Rocketpy/Curves/DragCurve.csv", sep = ', ')
+# print(curve_drag.time)
 
 ''' Defining rocket primary parameters '''
 rocket = Rocket(
@@ -13,10 +18,10 @@ rocket = Rocket(
     coordinate_system_orientation = "tail_to_nose",
 )
 
-''' Defining the motor '''
-from Motors import BuildingLiquidMotor
+# ''' Defining the motor '''
+# from Motors import BuildingLiquidMotor
 
-motor = BuildingLiquidMotor.liquid_motor
+# motor = BuildingLiquidMotor.liquid_motor
 
 ''' Defining the rail guide '''
 # rail_buttons = RailButtons(
@@ -42,8 +47,8 @@ motor = BuildingLiquidMotor.liquid_motor
 #     airfoil = ("Airfoils/Airfoil.csv","radians")
 # )
 
-''' Adding the motor '''
-rocket.add_motor(motor, position = -1.255)
+# ''' Adding the motor '''
+# rocket.add_motor(motor, position = -1.255)
 
 ''' Adding the rail guide '''
 rail_buttons = rocket.set_rail_buttons(
