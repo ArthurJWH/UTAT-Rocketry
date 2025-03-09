@@ -16,36 +16,11 @@ rocket = Rocket(
     coordinate_system_orientation="tail_to_nose",
 )
 
-''' Defining the motor '''
+''' Adding the motor '''
 from Motors import BuildingGenericMotor
 
 motor = BuildingGenericMotor.generic_motor
 
-""" Defining the rail guide """
-# rail_buttons = RailButtons(
-#     buttons_distance = 0.7,
-#     angular_position = 45
-# )
-
-""" Defining the nose cone"""
-# nose_cone = NoseCone(
-#     length = 0.55829,
-#     rocket_radius = rocket.radius,
-#     kind = "von karman"
-# )
-
-""" Defining fins"""
-# fin_set = TrapezoidalFins(
-#     n = 4,
-#     rocket_radius = rocket.radius,
-#     root_chord = 0.120,
-#     tip_chord = 0.060,
-#     span = 0.110,
-#     cant_angle = 0.5,
-#     airfoil = ("Airfoils/Airfoil.csv","radians")
-# )
-
-''' Adding the motor '''
 rocket.add_motor(motor, position = -1.255)
 
 """ Adding the rail guide """
