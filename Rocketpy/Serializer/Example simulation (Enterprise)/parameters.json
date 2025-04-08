@@ -1,0 +1,116 @@
+{
+    "elliptical_fins": {},
+    "environment": {
+        "base_pressure": null,
+        "base_temperature": null,
+        "date": null,
+        "elevation": 274.32,
+        "geodetic_method": "spherical",
+        "latitude": 28.61,
+        "longitude": -80.6,
+        "wind_average": 2.7777777777777777,
+        "wind_turbulence": 0.0
+    },
+    "flight": {
+        "heading": 90.0,
+        "inclination": 88.0,
+        "rail_length": 3.5
+    },
+    "id": {
+        "comment": null,
+        "designer": null,
+        "filepath": "rocket.ork",
+        "rocket_name": "Enterprise"
+    },
+    "motors": {
+        "center_of_dry_mass_position": 0,
+        "coordinate_system_orientation": "nozzle_to_combustion_chamber",
+        "dry_inertia": [
+            0,
+            0,
+            0
+        ],
+        "dry_mass": 0,
+        "grain_density": 977.8358759240072,
+        "grain_initial_height": 0.6997000122070313,
+        "grain_initial_inner_radius": 0.01875,
+        "grain_number": 1,
+        "grain_outer_radius": 0.0375,
+        "grain_separation": 0,
+        "grains_center_of_mass_position": 0,
+        "nozzle_position": -0.34985000610351563,
+        "nozzle_radius": 0.028124999999999997,
+        "position": 1.8078416409351568,
+        "throat_radius": 0.01875,
+        "thrust_source": "Simulation\\thrust_source.csv"
+    },
+    "nosecones": {
+        "base_radius": 0.078359,
+        "kind": "ogive",
+        "length": 0.626872,
+        "name": "Von Karman Nose Cone",
+        "position": 0.0
+    },
+    "parachutes": {
+        "0": {
+            "area": 1.824146924750992,
+            "cd": 2.2,
+            "cds": 4.013123234452183,
+            "deploy_altitude": 304.8,
+            "deploy_delay": 0.0,
+            "deploy_event": "altitude",
+            "name": "Iris Ultra Parachute [Cd 2.2 (10.9 oz) 60.0 in^3]"
+        },
+        "1": {
+            "area": 0.456036731187748,
+            "cd": 1.0,
+            "cds": 0.456036731187748,
+            "deploy_altitude": null,
+            "deploy_delay": 0.0,
+            "deploy_event": "apogee",
+            "name": "Parachute, nylon, conical, 30\""
+        }
+    },
+    "rail_buttons": {},
+    "rocket": {
+        "center_of_mass_without_propellant": 1.275,
+        "coordinate_system_orientation": "nose_to_tail",
+        "drag_curve": "Simulation\\drag_curve.csv",
+        "inertia": [
+            0.073,
+            0.073,
+            4.368
+        ],
+        "mass": 15.497,
+        "radius": 0.078359
+    },
+    "stored_results": {
+        "burnout_stability_margin": 1.95,
+        "flight_time": 142.81,
+        "ground_hit_velocity": 7.622,
+        "launch_rod_velocity": 30.286,
+        "max_acceleration": 133.931,
+        "max_altitude": 2608.479,
+        "max_mach": 0.833,
+        "max_stability_margin": 2.165,
+        "max_thrust": 2547.501,
+        "max_velocity": 280.996,
+        "min_stability_margin": 1.185,
+        "time_to_apogee": 22.221
+    },
+    "tails": {},
+    "trapezoidal_fins": {
+        "0": {
+            "cant_angle": 0.0,
+            "name": "Fin set",
+            "number": 3,
+            "position": 2.2461219999999984,
+            "root_chord": 0.4064,
+            "section": "airfoil",
+            "span": 0.1651,
+            "sweep_angle": null,
+            "sweep_length": 0.2632814158417292,
+            "tip_chord": 0.13335
+        }
+    }
+}
