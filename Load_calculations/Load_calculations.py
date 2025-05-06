@@ -14,6 +14,12 @@ Version 3.0 as of 13 of January 2025
 @editor: Nadim Hatoum
 """
 
+"""
+Example Terminal Entry to Run Code: 
+python Load_calculations.py --Rocket_info Discovery_info.dat --Rocket_COP Discovery_Centres_of_Pressure.DAT 
+--Rocket_CL Discovery_Lift_Coefficient_Curve_Slopes.DAT --Rocket_CD Discovery_Cd.dat  --Open_Rocket Open_rocket_info.dat
+"""
+
 #Import argparse, numpy, pandas, and plotly libraries
 import argparse
 from ast import arg
