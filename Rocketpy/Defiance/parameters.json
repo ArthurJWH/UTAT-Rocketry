@@ -1,0 +1,111 @@
+{
+    "elliptical_fins": {},
+    "environment": {
+        "base_pressure": null,
+        "base_temperature": null,
+        "date": null,
+        "elevation": 195.072,
+        "geodetic_method": "spherical",
+        "latitude": 28.6,
+        "longitude": -80.6,
+        "wind_average": 3.055555555555556,
+        "wind_turbulence": 0.1
+    },
+    "flight": {
+        "heading": 90.0,
+        "inclination": 85.0,
+        "rail_length": 9.14
+    },
+    "id": {
+        "comment": "Motor mass is 63.2 lbs (total fuel)",
+        "designer": null,
+        "filepath": "rocket.ork",
+        "rocket_name": "Rocket"
+    },
+    "motors": {
+        "center_of_dry_mass_position": 0,
+        "coordinate_system_orientation": "nozzle_to_combustion_chamber",
+        "dry_inertia": [
+            0,
+            0,
+            0
+        ],
+        "dry_mass": 0,
+        "grain_density": 626.0151814582313,
+        "grain_initial_height": 3.2229,
+        "grain_initial_inner_radius": 0.034925,
+        "grain_number": 1,
+        "grain_outer_radius": 0.06985,
+        "grain_separation": 0,
+        "grains_center_of_mass_position": 0,
+        "nozzle_position": -1.61145,
+        "nozzle_radius": 0.0523875,
+        "position": 3.7715261274467533,
+        "throat_radius": 0.034925,
+        "thrust_source": "Simulation\\thrust_source.csv"
+    },
+    "nosecones": {
+        "base_radius": 0.06985,
+        "kind": "Von Karman",
+        "length": 0.5632,
+        "name": "Nose cone",
+        "position": 0.0
+    },
+    "parachutes": {
+        "0": {
+            "area": 7.296587699003968,
+            "cd": 2.2,
+            "cds": 16.052492937808733,
+            "deploy_altitude": 304.8,
+            "deploy_delay": 0.0,
+            "deploy_event": "altitude",
+            "name": "Main Parachute"
+        },
+        "1": {
+            "area": 0.656692892910357,
+            "cd": 1.55,
+            "cds": 1.0178739840110533,
+            "deploy_altitude": null,
+            "deploy_delay": 0.0,
+            "deploy_event": "apogee",
+            "name": "Drogue Parachute"
+        }
+    },
+    "rail_buttons": {},
+    "rocket": {
+        "center_of_mass_without_propellant": 2.873,
+        "coordinate_system_orientation": "nose_to_tail",
+        "drag_curve": "Simulation\\drag_curve.csv",
+        "inertia": [
+            0.156,
+            0.156,
+            97.168
+        ],
+        "mass": 37.213,
+        "radius": 0.06985
+    },
+    "stored_results": {
+        "burnout_stability_margin": 6.29,
+        "flight_time": 405.812,
+        "ground_hit_velocity": 5.968,
+        "launch_rod_velocity": 34.246,
+        "max_acceleration": 91.714,
+        "max_altitude": 10140.0,
+        "max_mach": 1.499,
+        "max_stability_margin": 9.021,
+        "max_thrust": 5972.672,
+        "max_velocity": 489.274,
+        "min_stability_margin": 1.038,
+        "time_to_apogee": 44.97
+    },
+    "tails": {
+        "0": {
+            "bottom_radius": 0.0638,
+            "length": 0.05969,
+            "name": "Transition",
+            "position": 5.4254500000000005,
+            "top_radius": 0.06984999999999998
+        }
+    },
+    "trapezoidal_fins": {}
+}
