@@ -65,12 +65,15 @@ def MDO(
     carry_over = 2
 
     if filename:
-        with open(filename, "r") as f:
-            for line in f:
-                if line.strip():
-                    ind = eval(line.strip())
-                    if fitnessF(ind, **kwargs)[1]:
-                        pop.append(ind)
+        try:
+            with open(filename, "r") as f:
+                for line in f:
+                    if line.strip():
+                        ind = eval(line.strip())
+                        if fitnessF(ind, **kwargs)[1]:
+                            pop.append(ind)
+        except FileNotFoundError:
+            pass
     while len(pop) < pop_size:
             new_ind = random_ind()
             if fitnessF(new_ind, **kwargs)[1]:
