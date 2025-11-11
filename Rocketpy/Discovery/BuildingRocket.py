@@ -60,7 +60,7 @@ fin_set = rocket.add_trapezoidal_fins(
 main = rocket.add_parachute(
     name="main",
     cd_s=10.0,
-    trigger=800,  # ejection altitude in meters
+    trigger=1000,  # ejection altitude in meters
     sampling_rate=105,
     lag=1.5,
 )
