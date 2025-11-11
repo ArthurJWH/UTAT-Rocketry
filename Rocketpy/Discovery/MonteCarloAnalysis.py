@@ -127,7 +127,7 @@ test_dispersion.export_ellipses_to_kml(
     filename="Rocketpy/Discovery/Monte_Carlo_results/monte_carlo_class_example.kml",
     origin_lon=stochastic_env.longitude,
     origin_lat=stochastic_env.latitude,
-    type="impact",
+    type="all",
 )
 
 # test_dispersion.import_outputs("Rocketpy/results.txt")
