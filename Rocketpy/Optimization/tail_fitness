@@ -1,0 +1,54 @@
+from rocketpy import Rocket, Flight, Tail
+
+
+def tail_fitness(parameters, **kwargs):
+    valid = True
+
+    flight = kwargs.get("flight", None)
+    if flight is None:
+        raise ValueError("Flight instance must be provided in kwargs with key 'flight'")
+    env = flight.env
+    info = {
+        "rail_length": flight.rail_length,
+        "inclination": flight.inclination,
+        "heading": flight.heading,
+    }
+    rocket_dict = flight.rocket.to_dict()
+    rocket_dict["aerodynamic_surfaces"] = [
+        (component, pos)
+        for component, pos in rocket_dict["aerodynamic_surfaces"]
+        if not isinstance(component, Tail)
+    ]
+
+    new_rocket = Rocket.from_dict(rocket_dict)
+
+    tail_dict = {
+        "top_radius": new_rocket.radius,
+        "bottom_radius": parameters[0],
+        "length": parameters[1],
+    }
+
+    new_rocket.add_tail(
+        top_radius=tail_dict["top_radius"],
+        bottom_radius=tail_dict["bottom_radius"],
+        length=tail_dict["length"],
+        position=-1.194656,
+    )
+    new_rocket.all_info()
+    new_flight = Flight(
+        rocket=new_rocket,
+        environment=env,
+        rail_length=info["rail_length"],
+        inclination=info["inclination"],
+        heading=info["heading"],
+    )
+
+    fitness = 0
+    optimize = kwargs.get("optimize", ())
+    if optimize:
+        for opt in optimize:
+            fitness += opt(new_flight)
+    else:
+        fitness = new_flight.apogee
+
+    return fitness, valid
