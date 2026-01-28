@@ -44,7 +44,7 @@
             .venv/Scripts/Activate.ps1
             ```
 
-            If it returns an error saying running scripts is disabled on this system. Open PowwerShell as administrator and run:
+            If it returns an error saying running scripts is disabled on the system. Open PowerShell as administrator and run:
 
             ```
             Get-ExecutionPolicy
