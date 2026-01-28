@@ -44,6 +44,18 @@
             .venv/Scripts/Activate.ps1
             ```
 
+            If it returns an error saying running scripts is disabled on this system. Open PowwerShell as administrator and run:
+
+            ```
+            Get-ExecutionPolicy
+            ```
+
+            If it returns `Restricted`, run the following code and try activating the virtual environment again:
+
+            ```
+            Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+            ```
+
 6. Install RocketPy:
 
     ```
