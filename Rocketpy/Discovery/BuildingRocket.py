@@ -47,14 +47,13 @@ fin_set = rocket.add_trapezoidal_fins(
     airfoil=("Airfoil.csv", "radians"),
     position= 4.112)
 
-""" Tail """
-'''boat_tail = rocket.add_tail(
-    bottom_radius=0.0762,
-    top_radius=0.1016,
-    length=0.1524,
-    position=0,
-)'''
-
+""" Diameter Transition """
+transition = rocket.add_tail(
+    top_radius=15.2 / 200,     
+    bottom_radius=16.5 / 200,  
+    length=0.635 / 100,        
+    position=3.517,            
+)
 """ Adding parachute """
 
 main = rocket.add_parachute(
