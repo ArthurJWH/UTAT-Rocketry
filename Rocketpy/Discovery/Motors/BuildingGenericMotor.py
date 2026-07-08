@@ -17,7 +17,7 @@ generic_motor = GenericMotor(
     dry_inertia=(0.125, 0.125, 0.002),
     nozzle_radius=0.043,
     burn_time=4.58,
-    nozzle_position=1.095,
+    nozzle_position=0.305,
     interpolation_method="linear",
     coordinate_system_orientation="combustion_chamber_to_nozzle",
 )
