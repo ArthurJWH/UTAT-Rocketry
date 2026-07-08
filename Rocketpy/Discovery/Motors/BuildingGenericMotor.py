@@ -9,18 +9,17 @@ def thrust_curve_function(t):  # load .csv table of time and thrust
 
 generic_motor = GenericMotor(
     thrust_source="Rocketpy/Discovery/Curves/enginefilev4.csv",
-    chamber_radius=0.1,
-    chamber_height=1.2,
-    chamber_position=1.0,
-    dry_mass=10,
-    propellant_initial_mass=21,
-    center_of_dry_mass_position=1.75,
+    chamber_radius=0.259,
+    chamber_height=0.98,
+    chamber_position=0.49,
+    dry_mass=9.375,
+    propellant_initial_mass=0,
     dry_inertia=(0.125, 0.125, 0.002),
-    nozzle_radius=11.5 / 200,
-    burn_time=6,
-    nozzle_position=0,
+    nozzle_radius=0.043,
+    burn_time=4.58,
+    nozzle_position=1.095,
     interpolation_method="linear",
-    coordinate_system_orientation="nozzle_to_combustion_chamber",
+    coordinate_system_orientation="combustion_chamber_to_nozzle",
 )
 
 # generic_motor.exhaust_velocity
