@@ -21,7 +21,7 @@ import BuildingGenericMotor
 
 motor = BuildingGenericMotor.generic_motor
 
-rocket.add_motor(motor, position = 3.315)
+rocket.add_motor(motor, position = 4.105)
 
 """ Adding the rail guide """
 rail_buttons = rocket.set_rail_buttons(
