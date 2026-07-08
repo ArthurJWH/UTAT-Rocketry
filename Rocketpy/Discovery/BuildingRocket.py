@@ -4,16 +4,16 @@ from rocketpy import Rocket
 """ Defining rocket primary parameters """
 rocket = Rocket(
     radius=15.2 / 200,
-    mass=66.032,  # rocket's mass without the motor in kg
+    mass=33.973,  # rocket's mass without the motor in kg
     inertia=(
         6.321,
         6.321,
         0.034,
     ),  # in relation to the rocket's center of mass without motor
-    power_off_drag="DragCurve.csv",
-    power_on_drag="DragCurve.csv",
-    center_of_mass_without_motor=2.01,
-    coordinate_system_orientation="tail_to_nose",
+    power_off_drag="Drag_Curve_Unpowered.csv",
+    power_on_drag="Drag_Curve_Powered.csv",
+    center_of_mass_without_motor=2.34,
+    coordinate_system_orientation="nose_to_tail",
 )
 
 ''' Adding the motor '''
@@ -21,31 +21,31 @@ import BuildingGenericMotor
 
 motor = BuildingGenericMotor.generic_motor
 
-rocket.add_motor(motor, position = 0)
+rocket.add_motor(motor, position = 3.315)
 
 """ Adding the rail guide """
 rail_buttons = rocket.set_rail_buttons(
     # rail_buttons,
-    upper_button_position=0.0818,
-    lower_button_position=0.6182,
+    upper_button_position=4.3282,
+    lower_button_position=3.7912,
     angular_position=45,
 )
 
 """ Adding aerodynamic components """
 
 """ Nose cone """
-nose_cone = rocket.add_nose(length=0.461, kind="ogive", position=4.269)
+nose_cone = rocket.add_nose(length=0.451, kind="ogive", position=0.04)
 
 """ Fins """
 fin_set = rocket.add_trapezoidal_fins(
     n=3,
-    root_chord=0.19,
-    tip_chord=0.060,
-    span=0.12,
+    root_chord=0.298,
+    tip_chord=0.139,
+    span=0.152,
     cant_angle=0,
-    sweep_length=0.165,
+    sweep_length=0.14,
     airfoil=("Airfoil.csv", "radians"),
-    position= 0.205)
+    position= 4.112)
 
 """ Tail """
 '''boat_tail = rocket.add_tail(
@@ -59,15 +59,15 @@ fin_set = rocket.add_trapezoidal_fins(
 
 main = rocket.add_parachute(
     name="main",
-    cd_s=10.0,
-    trigger=1000,  # ejection altitude in meters
+    cd_s=16.07,
+    trigger=304.8,  # ejection altitude in meters
     sampling_rate=105,
     lag=1.5,
 )
 
 drogue = rocket.add_parachute(
     name="drogue",
-    cd_s=1.0,
+    cd_s= 0.591,
     trigger="apogee",  # ejection at apogee
     sampling_rate=105,
     lag=1.5,
@@ -75,5 +75,5 @@ drogue = rocket.add_parachute(
 
 # rocket.plots.static_margin()
 
-rocket.draw()
-rocket.info()
+#rocket.draw()
+#rocket.info()
