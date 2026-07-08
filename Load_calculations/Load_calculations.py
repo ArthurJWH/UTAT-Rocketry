@@ -12,12 +12,9 @@ Version 2.0 as of 8 of November 2024
 
 Version 3.0 as of 13 of January 2025
 @editor: Nadim Hatoum
-"""
 
-"""
-Example Terminal Entry to Run Code: 
-python Load_calculations.py --Rocket_info Discovery_info.dat --Rocket_COP Discovery_Centres_of_Pressure.DAT 
---Rocket_CL Discovery_Lift_Coefficient_Curve_Slopes.DAT --Rocket_CD Discovery_Cd.dat  --Open_Rocket Open_rocket_info.dat
+Version 4.0 as of 8 of July 2026
+@editor: Nadim Hatoum
 """
 
 #Import argparse, numpy, pandas, and plotly libraries
@@ -30,6 +27,8 @@ from plotly import graph_objs as go
 
 # pio.renderers.default = "pdf"
 
+# To run paste code in terminal use:
+# python3 load_calculations_ANNOTATED.py --Rocket_info Discovery_part_info.dat --Rocket_COP Discovery_Centres_of_Pressure.DAT --Rocket_CL Discovery_Lift_Coefficient_Curve_Slopes.DAT --Open_Rocket Open_rocket_info.dat --Rocket_CD Discovery_Cd.dat
 
 def main():
 
@@ -71,22 +70,29 @@ def main():
     aerolab_cl_alpha_df = pd.read_csv(args.Rocket_CL, sep="\s+", header=None, skiprows=1)
     aerolab_cd_df = pd.read_csv(args.Rocket_CD, sep="\s+", header=None, skiprows=1)
 
-    # Max q data       --> manually change <--
-    ### Extracts density, velocity of rocket, and velocity of wind from OpenRocket file and calculates angle of attack (alpha)
-    ### based on it using arctan(v_wind/U_inf) to obtain an angle in radians    
+    # Max q data 
     open_rocket_df = pd.read_csv(args.Open_Rocket, sep=',', header=None, skiprows=1)
     
     rho_inf = open_rocket_df.iloc[0,0] # density [kg m^-3]
     velocity_v_inf = open_rocket_df.iloc[0,1] # velocity [m s^-1]
-    velocity_v_wind_gust = open_rocket_df.iloc[0,2] # wind gust velocity [m s^-1]  
+    T_inf = open_rocket_df.iloc[0,3] # temperature [K]
 
-    angle_of_attack_alpha = np.arctan(velocity_v_wind_gust / velocity_v_inf)  # [rad]
+    angle_of_attack_alpha = 0.0872665  # [rad]
+
+    # ------------------ NEW PHYSICS FIX ------------------
+    # Calculate Mach Number to interpolate AeroLAB data
+    speed_of_sound = np.sqrt(1.4 * 287 * T_inf)  # [m/s] approx. Adjust this based on your altitude's temperature
+    mach_number = velocity_v_inf / speed_of_sound
     
-    # Lift coefficient curve slopes [rad^-1]
-    ### Extracts the lift coefficient curve slopes of the nosecone, wing, and body/wing of rocket
-    nose_body_cl_alpha = aerolab_cl_alpha_df.iloc[:,2].max()
-    wing_cl_alpha = aerolab_cl_alpha_df.iloc[:,3].max()
-    body_wing_cl_alpha = aerolab_cl_alpha_df.iloc[:,4].max()
+    # Interpolate Lift coefficient curve slopes [rad^-1] based on Mach number
+    nose_body_cl_alpha = np.interp(mach_number, aerolab_cl_alpha_df.iloc[:,0], aerolab_cl_alpha_df.iloc[:,2])
+    wing_cl_alpha = np.interp(mach_number, aerolab_cl_alpha_df.iloc[:,0], aerolab_cl_alpha_df.iloc[:,3])
+    body_wing_cl_alpha = np.interp(mach_number, aerolab_cl_alpha_df.iloc[:,0], aerolab_cl_alpha_df.iloc[:,4])
+
+    # Interpolate Centres of pressure [m] based on Mach number
+    nose_body_x_cp = np.interp(mach_number, aerolab_x_cp_df.iloc[:,0], aerolab_x_cp_df.iloc[:,2]) / 100
+    wing_x_cp = np.interp(mach_number, aerolab_x_cp_df.iloc[:,0], aerolab_x_cp_df.iloc[:,3]) / 100
+    body_wing_x_cp = np.interp(mach_number, aerolab_x_cp_df.iloc[:,0], aerolab_x_cp_df.iloc[:,4]) / 100
 
     # Lift coefficients
     ### Calculates the lift coefficients of the nosecone, wing, and body/wing of the rocket by multiplying the previous values by alpha
@@ -103,20 +109,14 @@ def main():
 
     rocket_lift_l = nose_body_lift_l + wing_lift_l + body_wing_lift_l
 
-    # Drag coefficient
-    ### Extracts the maximum drag coefficient of the rocket
-    rocket_cd = aerolab_cd_df.iloc[:,1].max()
+    # Interpolate Drag coefficient based on Mach number
+    rocket_cd = np.interp(mach_number, aerolab_cd_df.iloc[:,0], aerolab_cd_df.iloc[:,1])
 
     # Drag [N]
-    ### Calculates the drag coefficient of the rocket by multiplying the previous value by alpha
+    ### Calculates the drag force through the classical drag equation (Using the maximum frontal reference area)
     rocket_drag = 0.5 * rho_inf * (velocity_v_inf ** 2) * s * rocket_cd
-
-    # Centres of pressure [m]
-    ### Converts the centre of pressure and nosecone, wing and body/wing of the rocket to metres from centimetres and summing them up
-    nose_body_x_cp = aerolab_x_cp_df.iloc[-1, 2]/ 100
-    wing_x_cp = aerolab_x_cp_df.iloc[-1, 3] / 100
-    body_wing_x_cp = aerolab_x_cp_df.iloc[-1, 4] / 100
-
+    print("Rocket's total drag: ", rocket_drag)
+    
     # Masses [kg]
     ### Extracts the rocket masses of the nosecone, wing and body/wing of the rocket to get total rocket mass
     rocket_parts_mass_m = rocket_parts_df["mass_m"]
@@ -127,21 +127,23 @@ def main():
     ### Extracting the centre of mass (CoM) of the nosecone, wing and body/wing of the rocket by and
     #### using it to calculate the centre of mass of the rocket by calculating sum(mx*xCM,x)/ sum(mx)
     rocket_parts_x_cm = rocket_parts_df["x_cm"]/100
-
-    rocket_x_cm = sum(rocket_parts_mass_m * rocket_parts_x_cm) / sum(
-        rocket_parts_mass_m)
+    rocket_x_cm = sum(rocket_parts_mass_m * rocket_parts_x_cm) / rocket_mass_m
 
     # Moments of inertia [kg m^2]
-    ### Calculates the moment of inertia of the nosecone, wing and body/wing of the rocket by calculating 
-    ### Ix = mx(xCP,x - xCM,x)2 and then summing it up to get total moment of inertia
-    rocket_parts_i = rocket_parts_mass_m * (
-            rocket_parts_x_cm - rocket_x_cm) ** 2
-
+    # ------------------ NEW PHYSICS FIX ------------------
+    # Approximate local moment of inertia for each part assuming a solid cylinder: I_cm = (1/12) * m * L^2
+    # This prevents the script from underestimating I by treating huge parts as point-masses.
+    rocket_parts_length_m = rocket_info_df["Length"] / 100
+    rocket_parts_i_local = (1/12) * rocket_parts_mass_m * (rocket_parts_length_m ** 2)
+    
+    # Parallel Axis Theorem: I_total = I_local + m * (x_cp - rocket_x_cm)^2
+    rocket_parts_i = rocket_parts_i_local + rocket_parts_mass_m * (rocket_parts_x_cm - rocket_x_cm) ** 2
     rocket_i = sum(rocket_parts_i)
+    # -----------------------------------------------------
 
     # Moments [N m]
     ### Calculates the moments of the nosecone, wing and body/wing of the rocket by calculating 
-    ### Mx = Lx(xCP,x - xCM,x) and then summing it up to get total moment
+    ### Mx = Lx(xCP,x - rocket_x_cm) and then summing it up to get total moment
     nose_body_moment_m = nose_body_lift_l * (nose_body_x_cp - rocket_x_cm)
     wing_moment_m = wing_lift_l * (wing_x_cp - rocket_x_cm)
     body_wing_moment_m = body_wing_lift_l * (body_wing_x_cp - rocket_x_cm)
@@ -152,25 +154,55 @@ def main():
     ### Calculates angular acceleration using a_ang = M_TOT / I_TOT
     angular_acceleration_alpha = rocket_moment_m / rocket_i
 
+    #print("Rocket's angular acceleration: ", angular_acceleration_alpha)
+
     # Accelerations [m s^-2]
-    ### Calculates the total acceleration of the rocket using a_x = L_x / m_x + a_ang (xCP,x - xCM,x)
-    rocket_parts_a = (rocket_lift_l / rocket_mass_m) + (
-            angular_acceleration_alpha * (rocket_parts_x_cm - rocket_x_cm))
+    # ------------------ NEW PHYSICS FIX ------------------
+    # Lateral (transverse) acceleration is driven solely by lift (ignoring minor lateral gravity components)
+    rocket_lateral_acc = rocket_lift_l / rocket_mass_m
+
+    # Axial (longitudinal) acceleration is driven by thrust (0 here), drag, and gravity
+    rocket_axial_acc = (-rocket_drag - rocket_mass_m * 9.81) / rocket_mass_m
+
+    # The lateral acceleration at each component's CoM includes the rigid-body rotational contribution
+    rocket_parts_lateral_a = rocket_lateral_acc + (angular_acceleration_alpha * (rocket_parts_x_cm - rocket_x_cm))
 
     # Point loads [N]
-    ### Calculates the point loads of the rocket using F_x = - m_xa_x
-    rocket_parts_p = -(rocket_parts_mass_m * rocket_parts_a)
+    # Shear diagrams are ONLY driven by lateral/transverse forces. Weight is excluded here.
+    rocket_parts_inertial_lateral_p = -(rocket_parts_mass_m * rocket_parts_lateral_a)
+    rocket_parts_p = rocket_parts_inertial_lateral_p # Transverse point loads
+
+    # Intertial torque [N m]
+    rocket_parts_inertial_torque = rocket_parts_i_local * angular_acceleration_alpha
 
     # Summed Mass [kg]
-    ### Calculates the mass of every component of the rocket as well as the components above them 
     rocket_summed_mass = np.add.accumulate(rocket_parts_mass_m)
+    
+    # Drag on Individual Components [N] and Summed Drag [N]
+    rocket_parts_drag = rocket_drag * (rocket_parts_length_m / length_l)
+    rocket_summed_drag = np.add.accumulate(rocket_parts_drag)
 
     # Compressive Loads [N]
-    ### Calculates the compressive loads of the rocket using Fc_x = -m_x(a_x + g) - D
-    rocket_parts_c = -(rocket_summed_mass * (rocket_parts_a + 9.81)) - rocket_drag
+    # Compressive loads are ONLY driven by axial forces (Axial inertial resistance + Gravity + Drag)
+    rocket_parts_c = -(rocket_summed_mass * (rocket_axial_acc + 9.81)) - rocket_summed_drag
+    # -----------------------------------------------------
+ 
+# ------------------ STRUCTURAL JOINTS DICTIONARY ------------------
+    structural_joints = {
+        0.4510: "Nose/Rec Bay Joint",
+        1.0100: "Rec Bay/UEB Joint",
+        1.3400: "UEB/Fuel Tank Joint",
+        2.5800: "Fuel Tank/LEB Joint",
+        2.8770: "LEB/Ox Tank Joint",
+        3.5170: "Ox Tank/Injector Joint",
+        4.0564: "Injector/Fin Can Joint"
+    }
+    joint_xs = list(structural_joints.keys())
+    joint_labels = list(structural_joints.values())
+    # ------------------------------------------------------------------
 
-    # Load diagram
-    ### Produces a load diagram plotting the values from Line 113 vs x_cp and displays it
+# Load diagram (Transverse / Lateral Loads)
+    # This plots the discrete lateral forces (lift components vs lateral inertia)
     loads_d = {
         "x": np.array(
             rocket_parts_x_cm.tolist() + [nose_body_x_cp, wing_x_cp,
@@ -178,94 +210,117 @@ def main():
         "p": np.array(
             rocket_parts_p.tolist() + [nose_body_lift_l, wing_lift_l,
                                        body_wing_lift_l] + [0, 0]),
+        "m_concentrated": np.array(
+            rocket_parts_inertial_torque.tolist() + [0, 0, 0] + [0, 0]),
         "section": rocket_parts_df["Rocket_part"].tolist()
-                    + ["Nose", "Wing", "Body/Wing", "Start", "End"],
+                    + ["Nose Lift", "Wing Lift", "Body/Wing Lift", "Start", "End"],
     }
-    loads_df = pd.DataFrame(data=loads_d).sort_values(by=["x"])
+    loads_df_raw = pd.DataFrame(data=loads_d).sort_values(by=["x"])
+
+    joint_load_df = pd.DataFrame({"x": joint_xs, "p": 0.0, "m_concentrated": 0.0, "section": joint_labels})
+    loads_df = pd.concat([loads_df_raw, joint_load_df]).sort_values(by="x", kind='stable').reset_index(drop=True)
 
     loads_x = loads_df["x"]  # [m]
     loads_p = loads_df["p"]  # [N]
+    loads_m_conc = loads_df["m_concentrated"]  # [N m]
     section_labels = loads_df["section"]  # Section labels for parts
 
-    fig = go.Figure()
-    fig.add_trace(
-        go.Bar(x=loads_x, y=loads_p, text=section_labels, textposition="outside",)
+    fig1 = go.Figure()
+    fig1.add_trace(
+        go.Bar(x=loads_x, y=loads_p, text=section_labels, textposition="outside")
     ) 
-    fig.update_layout(
+    fig1.update_layout(
         xaxis_range=[0, length_l],
         xaxis_title="Position, x [m]",
-        yaxis_title="Load, P [N]",
-        title="Load Diagram",
+        yaxis_title="Transverse Load, P [N]",
+        title="Transverse Load Diagram",
     )
-    fig.update_traces(marker=dict(line=dict(width=10, color="blue")))
-    fig.show()
+    fig1.update_traces(marker=dict(line=dict(width=10, color="blue")))
+    fig1.show()
 
     # Shear diagram
-    ### Produces a shear diagram plotting the cumulative sum of the loads (i.e. sheer stresses) vs x_cp and displays it
+    # Produces a shear diagram plotting the cumulative sum of the lateral loads
     shears_d = {
         "x": np.repeat(np.copy(loads_x), 2)[1:-1],
         "shear_v": np.repeat(np.add.accumulate(np.copy(loads_p)), 2)[:-2],
+        "section": np.repeat(np.array(loads_df["section"].tolist()), 2)[1:-1],
     }
     shears_df = pd.DataFrame(data=shears_d)
 
     shears_x = shears_df["x"]  # [m]
     shears_shear_v = shears_df["shear_v"]  # [N]
+    shears_labels = shears_df["section"]  # Section labels
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=shears_x, y=shears_shear_v))
-    fig.update_layout(
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(x=shears_x, y=shears_shear_v, mode='lines+markers', line=dict(color='red'), text=shears_labels, hovertemplate='<b>%{text}</b><br>x: %{x:.2f} m<br>Shear: %{y:.1f} N<extra></extra>'))
+    fig2.update_layout(
         xaxis_range=[0, length_l],
         xaxis_title="Position, x [m]",
-        yaxis_title="Shear, V [N]",
-        title="Shear Diagram",
+        yaxis_title="Transverse Shear, V [N]",
+        title="Transverse Shear Diagram",
     )
-    fig.show()
+    fig2.show()
 
     # Axial Forces diagram
-    ### Produces a compressive forces diagram plotting the compressive forces vs x_cp and displays it
+    # Produces a compressive forces diagram based strictly on longitudinal drag and mass * axial acceleration
     compressive_d = {
         "x": np.array(rocket_parts_x_cm.tolist()),
         "compressive_v": np.array(rocket_parts_c.tolist()),
+        "section": rocket_parts_df["Rocket_part"].tolist(),
     }
-    compressive_df = pd.DataFrame(data=compressive_d)
+    compressive_df_raw = pd.DataFrame(data=compressive_d).sort_values(by=["x"])
+
+    def get_axial(x_target):
+        mask = compressive_df_raw["x"] <= x_target
+        if mask.any(): return compressive_df_raw.loc[mask, "compressive_v"].iloc[-1]
+        return 0.0
+
+    joint_axials = [get_axial(x) for x in joint_xs]
+    joint_axial_df = pd.DataFrame({"x": joint_xs, "compressive_v": joint_axials, "section": joint_labels})
+    compressive_df = pd.concat([compressive_df_raw, joint_axial_df]).sort_values(by="x", kind='stable').reset_index(drop=True)
 
     compressive_x = compressive_df["x"]  # [m]
     compressive_compress_v = compressive_df["compressive_v"]  # [N]
+    compressive_labels = compressive_df["section"]  # Section labels
 
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=compressive_x, y=compressive_compress_v))
-    fig.update_layout(
+    fig3 = go.Figure()
+    # Using 'hv' (horizontal-vertical) shape to show discrete stepped loading across components
+    fig3.add_trace(go.Scatter(x=compressive_x, y=compressive_compress_v, mode='lines+markers', line=dict(color='green', shape='hv'), text=compressive_labels, hovertemplate='<b>%{text}</b><br>x: %{x:.2f} m<br>Axial Force: %{y:.1f} N<extra></extra>'))
+    fig3.update_layout(
         xaxis_range=[0, length_l],
         xaxis_title="Position, x [m]",
-        yaxis_title="Axial Force, T [N]",
+        yaxis_title="Axial Compressive Force, T [N]",
         title="Axial Force Diagram",
     )
-    fig.show()
+    fig3.show()
 
     # Moment diagram
-    ### Produces a moment diagram plotting the loads times the x_cp (i.e. shear stresses) vs x_cp and displays it
+    # Produces a bending moment diagram by integrating the transverse shear diagram over x
+    dx = np.diff(loads_x, prepend=loads_x.iloc[0])
+    shear_v = np.cumsum(loads_p)
+    shifted_shear = np.insert(shear_v[:-1].to_numpy(), 0, 0)
+    moment_m = np.cumsum(shifted_shear * dx) + np.cumsum(loads_m_conc)  
+
     moments_d = {
-        "x": np.copy(loads_x),
-        "moment_m": np.concatenate((np.zeros(1), np.add.accumulate(
-            np.concatenate(
-                (np.diff(np.copy(loads_x)), np.zeros(1))) * np.add.accumulate(
-                np.copy(loads_p)))))[:-1],
+        "x": loads_x,
+        "moment_m": moment_m,
+        "section": loads_df["section"],
     }
     moments_df = pd.DataFrame(data=moments_d)
 
     moments_x = moments_df["x"]  # [m]
     moments_moment_m = moments_df["moment_m"]  # [N m]
+    moments_labels = moments_df["section"]  # Section labels
 
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=moments_x, y=moments_moment_m))
-    fig.update_layout(
+    fig4 = go.Figure()
+    fig4.add_trace(go.Scatter(x=moments_x, y=moments_moment_m, mode='lines+markers', line=dict(color='purple'), text=moments_labels, hovertemplate='<b>%{text}</b><br>x: %{x:.2f} m<br>Moment: %{y:.1f} N m<extra></extra>'))
+    fig4.update_layout(
         xaxis_range=[0, length_l],
         xaxis_title="Position, x [m]",
-        yaxis_title="Moment, M [N m]",
-        title="Moment Diagram",
+        yaxis_title="Bending Moment, M [N m]",
+        title="Bending Moment Diagram",
     )
-    fig.show()
+    fig4.show()
 
     return True
 
