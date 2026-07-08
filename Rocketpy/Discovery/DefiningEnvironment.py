@@ -3,7 +3,7 @@ from rocketpy import Environment
 """ Defining the Environment """
 
 """ Location """
-env = Environment(latitude=47.96527, longitude=-81.87412, elevation=1382.9)
+env = Environment(latitude=47.9657667, longitude=-81.8736056, elevation=423)
 
 """ Time """
 import datetime
