@@ -6,9 +6,9 @@ rocket = Rocket(
     radius=15.2 / 200,
     mass=33.973,  # rocket's mass without the motor in kg
     inertia=(
-        6.321,
-        6.321,
-        0.034,
+        43.919, # (1/4) * mass * radius^2 + (1/12) * mass * length^2
+        43.919, # (1/4) * mass * radius^2 + (1/12) * mass * length^2
+        0.1053, # (1/2) * mass * radius^2
     ),  # in relation to the rocket's center of mass without motor
     power_off_drag="Drag_Curve_Unpowered.csv",
     power_on_drag="Drag_Curve_Powered.csv",
